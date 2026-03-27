@@ -6,7 +6,7 @@ import { useToast } from '../context/ToastContext'
 import api from '../lib/axios'
 
 // ── API helpers ───────────────────────────────────────────────────────────────
-const fetchOrders  = ()               => api.get('/api/orders/my').then(r => r.data)
+
   // Note: admin uses /api/orders/stats + status patch. For a full admin order
   // list you'd add GET /api/orders on the backend (see backend note below).
   // For now we fetch stats and let status updates work via the patch endpoint.

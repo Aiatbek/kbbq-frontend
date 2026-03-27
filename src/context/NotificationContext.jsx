@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useRef } f
 import socket from '../lib/socket'
 import { useAuth } from './AuthContext'
 import { useToast } from './ToastContext'
+import { useQueryClient } from '@tanstack/react-query'
 
 /**
  * NotificationContext — real-time socket connection + notification state.
@@ -18,6 +19,7 @@ const NotificationContext = createContext(null)
 export function NotificationProvider({ children }) {
   const { user, isAdmin } = useAuth()
   const { showToast } = useToast()
+  const qc = useQueryClient()
   const [unseenOrders, setUnseenOrders] = useState(0)
   const audioRef = useRef(null)
 
@@ -60,6 +62,7 @@ export function NotificationProvider({ children }) {
       socket.emit('join', 'admin')
     }
     // Every logged-in user joins their personal room for order/reservation updates
+    console.log('Joining room:', `user_${user.id}`, 'user object:', user)
     socket.emit('join', `user_${user.id}`)
 
     return () => {
@@ -70,21 +73,24 @@ export function NotificationProvider({ children }) {
   // ── Event listeners ───────────────────────────────────────────────────────
   useEffect(() => {
     // New order — admin only
-    const onNewOrder = (order) => {
+      const onNewOrder = (order) => {
       if (!isAdmin) return
       setUnseenOrders(n => n + 1)
       playSound()
+      qc.invalidateQueries(['adminOrders'])
+      qc.invalidateQueries(['orderStats'])
       const customerName = order.userId?.name ?? 'Someone'
       showToast(`🍖 New order from ${customerName} · $${order.totalPrice.toFixed(2)}`, 'info', 6000)
     }
 
-    // Order status updated — relevant to both admin and customer
     const onOrderStatusUpdated = (order) => {
       if (!isAdmin) {
-        // Customer gets a toast when their order status changes
         showToast(`Your order is now ${order.status.toUpperCase()} 🔥`, 'success', 5000)
+        qc.invalidateQueries(['myOrders'])
+      } else {
+        qc.invalidateQueries(['adminOrders'])
+        qc.invalidateQueries(['orderStats'])
       }
-      // Admin view is updated via React Query invalidation in the page component
     }
 
     // New reservation — admin only

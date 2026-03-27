@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import api from '../lib/axios'
@@ -21,15 +21,17 @@ export default function CheckoutPage() {
   const { items, totalPrice, totalItems, clearCart } = useCart()
   const { user } = useAuth()
   const navigate = useNavigate()
+  const qc = useQueryClient()
 
   const [confirmed, setConfirmed] = useState(null)
 
   const { mutate: submitOrder, isPending, error } = useMutation({
     mutationFn: placeOrder,
     onSuccess: (data) => {
-      setConfirmed(data)
-      clearCart()
-    },
+    setConfirmed(data)
+    clearCart()
+    qc.invalidateQueries(['myOrders'])  // add this line
+},
   })
 
   const handlePlaceOrder = () => {
@@ -232,8 +234,15 @@ const isOpen = isRestaurantOpen()
           )}
 
           {/* CTA */}
+          <button
+            onClick={handlePlaceOrder}
+            disabled={isPending}
+            className="btn-primary w-full text-base py-3"
+          >
+            {isPending ? 'Placing order…' : `Place order · $${totalPrice.toFixed(2)}`}
+          </button>
 
-                    {!isOpen && (
+                    {/* {!isOpen && (
             <div className="px-4 py-3 rounded-lg bg-red-900/20 border border-red-700/30 text-red-400 text-sm text-center">
               We're currently closed. Orders can be placed daily 12:00 PM – 9:30 PM.
             </div>
@@ -244,7 +253,7 @@ const isOpen = isRestaurantOpen()
             className="btn-primary w-full text-base py-3"
           >
             {isPending ? 'Placing order…' : `Place order · $${totalPrice.toFixed(2)}`}
-          </button>
+          </button> */}
 
           <p className="text-xs text-brand-muted text-center">
             By placing your order you agree to our terms of service.
