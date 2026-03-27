@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import socket from '../lib/socket'
+import { useToast } from '../context/ToastContext'
 import api from '../lib/axios'
 
 // ── API helpers ───────────────────────────────────────────────────────────────
@@ -35,19 +37,23 @@ export default function AdminReservationsPage() {
   const [filterStatus, setFilterStatus] = useState('all')
   const [search, setSearch]             = useState('')
   const [deleteConfirm, setDeleteConfirm] = useState(null)
-  const [toast, setToast]               = useState(null)
-  const [expandedId, setExpandedId]     = useState(null) // row expanded for details
+  const [expandedId, setExpandedId]     = useState(null)
+  const { showToast } = useToast()// row expanded for details
 
-  const showToast = (msg, type = 'success') => {
-    setToast({ msg, type })
-    setTimeout(() => setToast(null), 3000)
-  }
+    useEffect(() => {
+    const refresh = () => qc.invalidateQueries(['adminReservations'])
+    socket.on('newReservation', refresh)
+    socket.on('reservationStatusUpdated', refresh)
+    return () => {
+      socket.off('newReservation', refresh)
+      socket.off('reservationStatusUpdated', refresh)
+    }
+  }, [qc])
 
   // ── Query ─────────────────────────────────────────────────────────────────
   const { data: reservations = [], isLoading } = useQuery({
     queryKey: ['adminReservations'],
     queryFn: fetchReservations,
-    refetchInterval: 30_000, // poll every 30s so new bookings appear automatically
   })
 
   // ── Mutations ─────────────────────────────────────────────────────────────
@@ -94,7 +100,7 @@ export default function AdminReservationsPage() {
         <div>
           <h1 className="text-3xl text-brand-primary">Reservations</h1>
           <p className="text-brand-muted text-sm mt-1">
-            {reservations.length} total · auto-refreshes every 30s
+            {reservations.length} total · real-time
           </p>
         </div>
       </div>
@@ -268,16 +274,6 @@ export default function AdminReservationsPage() {
               <button onClick={() => setDeleteConfirm(null)} className="btn-outline flex-1">Cancel</button>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* ── Toast ─────────────────────────────────────────────────────────── */}
-      {toast && (
-        <div className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl border text-sm font-medium shadow-xl
-                         ${toast.type === 'error'
-                           ? 'bg-brand-danger/10  border-brand-danger/30  text-brand-danger'
-                           : 'bg-brand-success/10 border-brand-success/30 text-brand-success'}`}>
-          {toast.type === 'error' ? '✕ ' : '✓ '}{toast.msg}
         </div>
       )}
     </div>

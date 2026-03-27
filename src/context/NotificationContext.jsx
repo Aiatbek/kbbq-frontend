@@ -3,6 +3,7 @@ import socket from '../lib/socket'
 import { useAuth } from './AuthContext'
 import { useToast } from './ToastContext'
 import { useQueryClient } from '@tanstack/react-query'
+import api from '../lib/axios'
 
 /**
  * NotificationContext — real-time socket connection + notification state.
@@ -21,7 +22,36 @@ export function NotificationProvider({ children }) {
   const { showToast } = useToast()
   const qc = useQueryClient()
   const [unseenOrders, setUnseenOrders] = useState(0)
-  const audioRef = useRef(null)
+  const [unseenReservations, setUnseenReservations] = useState(0)
+
+
+  // Load existing pending count on mount (admin only)
+useEffect(() => {
+  if (!isAdmin) return
+
+  const fetchPendingCount = async () => {
+    try {
+      const res = await api.get('api/orders/admin') // adjust to your endpoint
+      const pending = res.data.filter(o => o.status === 'pending').length
+      setUnseenOrders(pending)
+    } catch {
+      // silently fail
+    }
+  }
+
+  fetchPendingCount()
+}, [isAdmin])
+
+useEffect(() => {
+  if (!isAdmin) return
+  const fetchPendingReservations = async () => {
+    try {
+      const res = await api.get('/api/reservations')
+      setUnseenReservations(res.data.filter(r => r.status === 'pending').length)
+    } catch {}
+  }
+  fetchPendingReservations()
+}, [isAdmin])
 
   // ── Audio setup — create a simple beep using Web Audio API ───────────────
   const playSound = useCallback(() => {
@@ -73,42 +103,60 @@ export function NotificationProvider({ children }) {
   // ── Event listeners ───────────────────────────────────────────────────────
   useEffect(() => {
     // New order — admin only
-      const onNewOrder = (order) => {
-      if (!isAdmin) return
-      setUnseenOrders(n => n + 1)
-      playSound()
+    const onNewOrder = (order) => {
+    if (!isAdmin) return
+    playSound()
+    qc.invalidateQueries(['adminOrders'])
+    qc.invalidateQueries(['orderStats'])
+    // Refetch pending count
+    api.get('/api/orders/admin').then(res => {
+      setUnseenOrders(res.data.filter(o => o.status === 'pending').length)
+    }).catch(() => {})
+    const customerName = order.userId?.name ?? 'Someone'
+    showToast(`🍖 New order from ${customerName} · $${order.totalPrice.toFixed(2)}`, 'info', 6000)
+  }
+
+  const onOrderStatusUpdated = (order) => {
+    if (!isAdmin) {
+      showToast(`Your order is now ${order.status.toUpperCase()} 🔥`, 'success', 5000)
+      qc.invalidateQueries(['myOrders'])
+    } else {
       qc.invalidateQueries(['adminOrders'])
       qc.invalidateQueries(['orderStats'])
-      const customerName = order.userId?.name ?? 'Someone'
-      showToast(`🍖 New order from ${customerName} · $${order.totalPrice.toFixed(2)}`, 'info', 6000)
+      // Refetch pending count
+      api.get('/api/orders/admin').then(res => {
+        setUnseenOrders(res.data.filter(o => o.status === 'pending').length)
+      }).catch(() => {})
     }
-
-    const onOrderStatusUpdated = (order) => {
-      if (!isAdmin) {
-        showToast(`Your order is now ${order.status.toUpperCase()} 🔥`, 'success', 5000)
-        qc.invalidateQueries(['myOrders'])
-      } else {
-        qc.invalidateQueries(['adminOrders'])
-        qc.invalidateQueries(['orderStats'])
-      }
-    }
+  }
 
     // New reservation — admin only
     const onNewReservation = (reservation) => {
-      if (!isAdmin) return
-      showToast(`📅 New booking from ${reservation.name} — ${reservation.numberOfGuests} guests`, 'info', 6000)
-    }
+    if (!isAdmin) return
+    playSound()
+    qc.invalidateQueries(['adminReservations'])
+    api.get('/api/reservations').then(res => {
+      setUnseenReservations(res.data.filter(r => r.status === 'pending').length)
+    }).catch(() => {})
+    showToast(`📅 New booking from ${reservation.name} — ${reservation.numberOfGuests} guests`, 'info', 6000)
+  }
 
     // Reservation status updated — customer gets toast
     const onReservationStatusUpdated = (reservation) => {
-      if (!isAdmin) {
-        const msg =
-          reservation.status === 'confirmed' ? '✅ Your reservation is confirmed!'
-          : reservation.status === 'cancelled' ? '❌ Your reservation was cancelled.'
-          : `Your reservation status: ${reservation.status}`
-        showToast(msg, reservation.status === 'cancelled' ? 'error' : 'success', 6000)
-      }
-    }
+  if (isAdmin) {
+    qc.invalidateQueries(['adminReservations'])
+    api.get('/api/reservations').then(res => {
+      setUnseenReservations(res.data.filter(r => r.status === 'pending').length)
+    }).catch(() => {})
+  } else {
+    qc.invalidateQueries(['myReservations'])
+    const msg =
+      reservation.status === 'confirmed' ? '✅ Your reservation is confirmed!'
+      : reservation.status === 'cancelled' ? '❌ Your reservation was cancelled.'
+      : `Your reservation status: ${reservation.status}`
+    showToast(msg, reservation.status === 'cancelled' ? 'error' : 'success', 6000)
+  }
+}
 
     socket.on('newOrder',                onNewOrder)
     socket.on('orderStatusUpdated',      onOrderStatusUpdated)
@@ -124,7 +172,7 @@ export function NotificationProvider({ children }) {
   }, [isAdmin, playSound, showToast])
 
   return (
-    <NotificationContext.Provider value={{ unseenOrders, clearUnseenOrders }}>
+    <NotificationContext.Provider value={{ unseenOrders, clearUnseenOrders, unseenReservations }}>
       {children}
     </NotificationContext.Provider>
   )

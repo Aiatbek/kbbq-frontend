@@ -4,13 +4,15 @@ import { useAuth } from '../../context/AuthContext'
 import { useCart } from '../../context/CartContext'
 import { useNotification } from '../../context/NotificationContext'
 
+
 export default function Navbar() {
   const { user, isAdmin, logout } = useAuth()
   const { totalItems } = useCart()
-  const { unseenOrders } = useNotification()
   const navigate = useNavigate()
   const location = useLocation()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { unseenOrders, unseenReservations  } = useNotification()
+  
 
   // Close mobile menu on route change
   useEffect(() => { setMobileOpen(false) }, [location.pathname])
@@ -67,7 +69,17 @@ export default function Navbar() {
             </>}
             {isAdmin && <>
               <NavLink to="/admin" className={adminLinkClass}>Menu Mgmt</NavLink>
-              <NavLink to="/admin/reservations" className={adminLinkClass}>Bookings</NavLink>
+             <NavLink to="/admin/reservations" className={adminLinkClass}>
+                <span className="relative">
+                  Bookings
+                  {unseenReservations > 0 && (
+                    <span className="absolute -top-2 -right-4 bg-brand-danger text-white text-xs
+                                    font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                      {unseenReservations > 9 ? '9+' : unseenReservations}
+                    </span>
+                  )}
+                </span>
+              </NavLink>
               <NavLink to="/admin/orders" className={adminLinkClass}>
                 <span className="relative">
                   Orders

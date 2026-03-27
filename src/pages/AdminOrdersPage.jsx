@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import socket from '../lib/socket'
-import { useNotification } from '../context/NotificationContext'
 import { useToast } from '../context/ToastContext'
 import api from '../lib/axios'
 
@@ -46,9 +45,6 @@ export default function AdminOrdersPage() {
   const qc = useQueryClient()
   const [filterStatus, setFilterStatus] = useState('all')
   const { showToast } = useToast()
-  const { clearUnseenOrders } = useNotification()
-
-useEffect(() => { clearUnseenOrders() }, [clearUnseenOrders])
 
 useEffect(() => {
   const refresh = () => {
