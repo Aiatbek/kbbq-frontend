@@ -6,6 +6,7 @@
   body {
     @apply bg-brand-bg text-brand-primary font-sans antialiased;
     background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23E8640C' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    font-family: 'Jost', sans-serif;
   }
   h1, h2, h3 { @apply font-display text-brand-primary; }
   ::-webkit-scrollbar       { width: 5px; height: 5px; }
@@ -83,4 +84,84 @@
 @keyframes flicker {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.85; }
+}
+
+@keyframes swingSign {
+  0%, 100% { transform: rotate(-3deg); }
+  50%       { transform: rotate(3deg); }
+}
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
+}
+
+.card-magnetic {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  will-change: transform;
+}
+
+.card-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255,255,255,0.08) 50%,
+    transparent 60%
+  );
+  transform: translateX(-100%) skewX(-15deg);
+  pointer-events: none;
+}
+
+.card-shimmer:hover::after {
+  animation: shimmer 1.4s ease forwards;
+}
+
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-wrap {
+  overflow: hidden;
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 18s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+.ember-particle {
+  position: absolute;
+  bottom: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #E8640C;
+  opacity: 0;
+  box-shadow: 0 0 6px 2px rgba(232, 100, 12, 0.6);
+  animation: emberRise linear infinite;
+}
+
+@keyframes emberRise {
+  0%   { transform: translateY(0) translateX(0) scale(1);        opacity: 0; }
+  15%  { opacity: 1; }
+  50%  { transform: translateY(-160px) translateX(15px) scale(0.8); opacity: 0.8; }
+  80%  { opacity: 0.4; }
+  100% { transform: translateY(-340px) translateX(-10px) scale(0.2); opacity: 0; }
 }

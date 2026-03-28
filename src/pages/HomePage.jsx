@@ -52,10 +52,18 @@ const SOCIALS = [
 ]
 
 const PERKS = [
-  { icon: '🔥', title: 'Live Charcoal Grills', desc: 'Every table has its own built-in charcoal grill for the authentic KBBQ experience.' },
-  { icon: '🥩', title: 'Premium Cuts Only', desc: 'We source A5 Wagyu, USDA Prime, and heritage-breed pork from trusted farms.' },
-  { icon: '🍶', title: 'Unlimited Banchan', desc: 'Free-flowing sides — kimchi, japchae, pajeon and more, refilled as often as you like.' },
-  { icon: '🍺', title: 'Soju & Korean Beer', desc: 'Pair your meal with chilled soju cocktails or ice-cold hite beer.' },
+  { icon: '🔥', title: 'Live Charcoal Grills',
+    desc: 'Every table has its own built-in charcoal grill for the authentic KBBQ experience.',
+    image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&q=80' },
+  { icon: '🥩', title: 'Premium Cuts Only',
+    desc: 'We source A5 Wagyu, USDA Prime, and heritage-breed pork from trusted farms.',
+    image: 'https://images.unsplash.com/photo-1558030006-450675393462?w=400&q=80' },
+  { icon: '🍶', title: 'Unlimited Banchan',
+    desc: 'Free-flowing sides — kimchi, japchae, pajeon and more, refilled as often as you like.',
+    image: 'https://images.unsplash.com/photo-1590301157890-4810ed352733?w=400&q=80' },
+  { icon: '🍺', title: 'Soju & Korean Beer',
+    desc: 'Pair your meal with chilled soju cocktails or ice-cold hite beer.',
+    image: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=400&q=80' },
 ]
 
 function SectionLabel({ text }) {
@@ -85,15 +93,12 @@ export default function HomePage() {
         {/* Background image */}
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1544025162-d76694265947?w=1600&q=80"
+            src="https://s3-media0.fl.yelpcdn.com/bphoto/94PL1mAz-6S9e3WIgINq9w/o.jpg"
             alt="Korean BBQ grill"
             className="w-full h-full object-cover"
           />
           {/* Heavy dark overlay so text pops */}
           <div className="absolute inset-0 bg-gradient-to-b from-brand-bg/80 via-brand-bg/60 to-brand-bg" />
-          {/* Warm ember glow at bottom */}
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-2/3 h-48
-                          bg-brand-ember/20 blur-3xl rounded-full pointer-events-none" />
         </div>
 
         {/* Content */}
@@ -102,17 +107,29 @@ export default function HomePage() {
           {(() => {
             const open = isRestaurantOpen()
             return (
-              <div className={`inline-flex items-center gap-2 border rounded-full px-4 py-1.5 mb-8
-                              ${open ? 'bg-brand-accent/15 border-brand-accent/30' : 'bg-red-900/20 border-red-700/30'}`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${open ? 'bg-brand-accent animate-pulse' : 'bg-red-500'}`} />
-                <span className={`text-xs font-medium uppercase tracking-widest ${open ? 'text-brand-accent' : 'text-red-400'}`}>
-                  {open ? 'Now open' : 'Closed'} · Houston, TX
-                </span>
+              <div className="flex flex-col items-center mb-10"
+                  style={{ animation: 'swingSign 3s ease-in-out infinite', transformOrigin: 'top center' }}>
+                <div className="w-2.5 h-2.5 rounded-full border-2 border-yellow-700" />
+                <div className="flex gap-10">
+                  <div className="w-px h-8 bg-yellow-700 opacity-60" />
+                  <div className="w-px h-8 bg-yellow-700 opacity-60" />
+                </div>
+                <div className={`relative px-7 py-3 border-2 rounded-sm
+                                ${open ? 'border-green-500' : 'border-brand-accent'}`}>
+                  <div className={`absolute inset-1 border rounded-sm opacity-40
+                                  ${open ? 'border-green-500' : 'border-brand-accent'}`} />
+                  
+                  <p className={`text-2xl tracking-widest leading-none
+                                ${open ? 'text-green-400' : 'text-brand-accent'}`}
+                    style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.15em' }}>
+                    {open ? 'OPEN' : 'CLOSED'}
+                  </p>
+                </div>
               </div>
             )
           })()}
 
-          <h1 className="text-5xl md:text-7xl lg:text-8xl text-brand-primary leading-none mb-4">
+          <h1 className="font-display text-5xl md:text-7xl lg:text-8xl text-brand-primary leading-none mb-4">
             Grill. Sizzle.
             <span className="block text-brand-accent" style={{ animation: 'flicker 3s ease-in-out infinite' }}>
               Devour.
@@ -137,29 +154,49 @@ export default function HomePage() {
         </div>
 
         {/* Scroll hint */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center
-                        gap-1 text-brand-muted animate-bounce">
-          <span className="text-xs uppercase tracking-widest">Scroll</span>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
-      </section>
 
-      {/* ── PERKS STRIP ──────────────────────────────────────────────────── */}
-      <section className="border-y border-brand-border bg-brand-surface">
-        <div className="max-w-6xl mx-auto px-4 py-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {PERKS.map(({ icon, title, desc }) => (
-              <div key={title} className="flex flex-col gap-2">
-                <span className="text-2xl">{icon}</span>
-                <p className="text-sm font-medium text-brand-primary">{title}</p>
-                <p className="text-xs text-brand-muted leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
       </section>
+        {/* ── PERKS STRIP ──────────────────────────────────────────────────── */}
+        <section className="border-y border-brand-border bg-brand-surface py-10">
+          <div className="marquee-wrap">
+            <div className="marquee-track">
+              {/* First set */}
+              <div className="flex">
+                {PERKS.map(({ icon, title, desc, image }) => (
+                    <div key={title} className="shrink-0 w-64 mx-5 rounded-2xl overflow-hidden border border-brand-border bg-brand-surface">
+                      <div className="h-36 overflow-hidden">
+                        <img src={image} alt={title} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="p-4">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xl">{icon}</span>
+                          <p className="text-sm font-medium text-brand-primary">{title}</p>
+                        </div>
+                        <p className="text-xs text-brand-muted leading-relaxed">{desc}</p>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+              {/* Identical second set for seamless loop */}
+              <div className="flex">
+                {PERKS.map(({ icon, title, desc, image }) => (
+                  <div key={title + '2'} className="shrink-0 w-64 mx-5 rounded-2xl overflow-hidden border border-brand-border bg-brand-surface">
+                    <div className="h-36 overflow-hidden">
+                      <img src={image} alt={title} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="p-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xl">{icon}</span>
+                        <p className="text-sm font-medium text-brand-primary">{title}</p>
+                      </div>
+                      <p className="text-xs text-brand-muted leading-relaxed">{desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
 
       {/* ── FEATURED MENU ────────────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-4 py-24">
@@ -169,15 +206,25 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {featured.map((item, i) => (
             <Link key={item._id} to="/menu"
-              className={`group relative rounded-2xl overflow-hidden border border-brand-border
-                          hover:border-brand-accent/50 transition-all duration-300
-                          hover:shadow-xl hover:shadow-brand-accent/10
-                          ${i === 0 ? 'md:col-span-2 h-80' : 'h-64'}`}>
-
+              className={`card-magnetic card-shimmer group relative rounded-2xl overflow-hidden
+                          border border-brand-border
+                          ${i === 0 ? 'md:col-span-2 h-80' : 'h-64'}`}
+              onMouseMove={e => {
+                const el = e.currentTarget
+                const rect = el.getBoundingClientRect()
+                const x = (e.clientX - rect.left) / rect.width - 0.5
+                const y = (e.clientY - rect.top) / rect.height - 0.5
+                el.style.transform = `perspective(800px) rotateY(${x * 15}deg) rotateX(${-y * 15}deg) translateZ(10px)`
+                el.style.boxShadow = `${-x * 20}px ${-y * 20}px 40px rgba(232,100,12,0.15)`
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg) translateZ(0px)'
+                e.currentTarget.style.boxShadow = ''
+              }}
+            >
               {item.imageUrl ? (
                 <img src={item.imageUrl} alt={item.name}
-                  className="absolute inset-0 w-full h-full object-cover
-                             transition-transform duration-500 group-hover:scale-105" />
+                  className="absolute inset-0 w-full h-full object-cover"/>
               ) : (
                 <div className="absolute inset-0 bg-brand-elevated flex items-center justify-center">
                   <span className="text-7xl opacity-20">🥩</span>
@@ -185,10 +232,6 @@ export default function HomePage() {
               )}
 
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-
-              {/* Hover glow */}
-              <div className="absolute inset-0 bg-brand-accent/0 group-hover:bg-brand-accent/5
-                              transition-colors duration-300" />
 
               <div className="absolute bottom-0 left-0 right-0 p-5">
                 <span className="text-xs font-medium text-brand-accent uppercase tracking-wider">
@@ -215,7 +258,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── AMBIENT PHOTO STRIP ──────────────────────────────────────────── */}
+      {/* ── AMBIENT PHOTO STRIP ────────────────────────────────────────────
       <section className="max-w-6xl mx-auto px-4 mb-24">
         <div className="grid grid-cols-3 gap-3 h-48 rounded-2xl overflow-hidden">
           <div className="rounded-xl overflow-hidden col-span-1">
@@ -231,106 +274,131 @@ export default function HomePage() {
               alt="Restaurant atmosphere" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
           </div>
         </div>
-      </section>
+      </section> */}
 
-      {/* ── HOURS + SOCIALS ──────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-4 py-16 border-t border-brand-border">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+     {/* ── FOOTER ───────────────────────────────────────────────────────── */}
+      <footer className="relative bg-brand-bg overflow-hidden">
 
-          {/* Hours & location */}
+        {/* Ember particles */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          {[...Array(20)].map((_, i) => (
+            <div key={i} className="ember-particle" style={{
+              left: `${8 + i * 8}%`,
+              animationDelay: `${i * 0.4}s`,
+              animationDuration: `${3 + (i % 4)}s`,
+            }} />
+          ))}
+        </div>
+
+        {/* Top decorative divider */}
+        <div className="relative flex items-center gap-4 px-8 pt-16 pb-10 max-w-6xl mx-auto">
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-brand-accent/40 to-transparent" />
+          <span className="text-brand-accent/60 text-xs tracking-[0.4em] uppercase font-light">한국 바비큐</span>
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-brand-accent/40 to-transparent" />
+        </div>
+
+        {/* Large display text */}
+        <div className="px-8 max-w-6xl mx-auto mb-14 overflow-hidden">
+          <h2 className="font-display text-[clamp(3rem,10vw,8rem)] leading-none text-brand-primary/10
+                         select-none tracking-tight whitespace-nowrap">
+            불고기 · BBQ · 갈비
+          </h2>
+        </div>
+
+        {/* Main footer grid */}
+        <div className="max-w-6xl mx-auto px-8 grid grid-cols-1 md:grid-cols-3 gap-12 pb-16">
+
+          {/* Col 1 — Address + hours */}
           <div>
-            <SectionLabel text="Find us" />
-            <h2 className="text-3xl text-brand-primary mb-8">Hours & location</h2>
+            <p className="text-xs uppercase tracking-[0.3em] text-brand-accent mb-6">Find us</p>
+            <p className="font-display text-2xl text-brand-primary mb-4">KBBQ Restaurant</p>
+            <p className="text-brand-muted text-sm leading-relaxed mb-1">1234 Korean BBQ Blvd</p>
+            <p className="text-brand-muted text-sm leading-relaxed mb-4">Houston, TX 77001</p>
+            <a href="https://maps.google.com" target="_blank" rel="noreferrer"
+              className="inline-flex items-center gap-2 text-xs text-brand-accent
+                         border border-brand-accent/30 rounded-full px-4 py-1.5
+                         hover:bg-brand-accent/10 transition-colors">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              Get directions
+            </a>
+          </div>
 
-            <div className="flex items-start gap-3 mb-8">
-              <div className="w-9 h-9 rounded-lg bg-brand-accent/15 border border-brand-accent/30
-                              flex items-center justify-center text-brand-accent shrink-0 mt-0.5">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-brand-primary font-medium">KBBQ Restaurant</p>
-                <p className="text-brand-muted text-sm mt-0.5">1234 Korean BBQ Blvd</p>
-                <p className="text-brand-muted text-sm">Houston, TX 77001</p>
-                <a href="https://maps.google.com" target="_blank" rel="noreferrer"
-                  className="text-xs text-brand-accent hover:underline mt-2 inline-block">
-                  Get directions →
-                </a>
-              </div>
-            </div>
-
+          {/* Col 2 — Hours */}
+          <div>
+            <p className="text-xs uppercase tracking-[0.3em] text-brand-accent mb-6">Hours</p>
             <div className="space-y-0">
               {HOURS.map(({ day, time }) => (
-                <div key={day} className="flex justify-between py-3 border-b border-brand-border/50 last:border-0">
+                <div key={day} className="flex justify-between py-3
+                                          border-b border-brand-border/30 last:border-0">
                   <span className="text-sm text-brand-muted">{day}</span>
-                  <span className="text-sm font-mono text-brand-primary">{time}</span>
+                  <span className="text-sm font-mono text-brand-primary/80">{time}</span>
                 </div>
               ))}
             </div>
-
-            <div className="flex items-center gap-3 mt-8">
-              <div className="w-9 h-9 rounded-lg bg-brand-accent/15 border border-brand-accent/30
-                              flex items-center justify-center text-brand-accent shrink-0">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-xs text-brand-muted uppercase tracking-wider">Reservations</p>
-                <a href="tel:+17135550000"
-                  className="text-brand-primary font-mono hover:text-brand-accent transition-colors">
-                  +1 (713) 555-0000
-                </a>
-              </div>
-            </div>
+            <a href="tel:+17135550000"
+              className="inline-flex items-center gap-2 mt-6 text-brand-muted
+                         hover:text-brand-accent transition-colors text-sm font-mono">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+              </svg>
+              +1 (713) 555-0000
+            </a>
           </div>
 
-          {/* Socials + CTA */}
+          {/* Col 3 — Socials + CTA */}
           <div>
-            <SectionLabel text="Stay connected" />
-            <h2 className="text-3xl text-brand-primary mb-8">Follow us</h2>
-
-            <div className="space-y-3 mb-8">
-              {SOCIALS.map(({ name, handle, href, icon }) => (
+            <p className="text-xs uppercase tracking-[0.3em] text-brand-accent mb-6">Stay connected</p>
+            <div className="flex gap-3 mb-8">
+              {SOCIALS.map(({ name, href, icon }) => (
                 <a key={name} href={href} target="_blank" rel="noreferrer"
-                  className="flex items-center gap-4 p-4 rounded-xl border border-brand-border
-                             bg-brand-surface hover:border-brand-accent/40 hover:bg-brand-elevated
-                             transition-all duration-200 group">
-                  <div className="w-10 h-10 rounded-lg bg-brand-elevated border border-brand-border
-                                  flex items-center justify-center text-brand-muted
-                                  group-hover:text-brand-accent group-hover:border-brand-accent/30
-                                  transition-colors shrink-0">
-                    {icon}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-brand-primary">{name}</p>
-                    <p className="text-xs text-brand-muted">{handle}</p>
-                  </div>
-                  <svg className="w-4 h-4 text-brand-muted group-hover:text-brand-accent transition-colors shrink-0"
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
-                  </svg>
+                  className="w-10 h-10 rounded-full border border-brand-border/50
+                             flex items-center justify-center text-brand-muted
+                             hover:text-brand-accent hover:border-brand-accent/40
+                             transition-all duration-200">
+                  {icon}
                 </a>
               ))}
             </div>
 
-            <div className="p-6 rounded-2xl bg-brand-accent/10 border border-brand-accent/25">
-              <h3 className="text-lg text-brand-primary mb-1">Ready to dine? 🔥</h3>
-              <p className="text-brand-muted text-sm mb-4">
-                Reserve your table online — it takes less than a minute.
-              </p>
-              <Link to="/reservations" className="btn-primary w-full text-center block">
-                Book a table
-              </Link>
+            <div className="relative">
+              <div className="absolute -inset-px rounded-xl bg-gradient-to-br
+                              from-brand-accent/30 via-transparent to-transparent" />
+              <div className="relative rounded-xl border border-brand-border/50
+                              bg-brand-surface/50 p-6">
+                <p className="font-display text-xl text-brand-primary mb-1">Ready to dine?</p>
+                <p className="text-brand-muted text-xs mb-4 leading-relaxed">
+                  Reserve your table — it takes less than a minute.
+                </p>
+                <Link to="/reservations" className="btn-primary w-full text-center block text-sm">
+                  Book a table
+                </Link>
+              </div>
             </div>
           </div>
         </div>
-      </section>
+
+        {/* Bottom decorative divider */}
+        <div className="relative flex items-center gap-4 px-8 max-w-6xl mx-auto">
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-brand-border to-transparent" />
+          <span className="text-brand-muted/30 text-xs tracking-widest">✦</span>
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-brand-border to-transparent" />
+        </div>
+
+        {/* Bottom bar */}
+        <div className="max-w-6xl mx-auto px-8 py-6 flex flex-col sm:flex-row
+                        items-center justify-between gap-2">
+          <p className="text-xs text-brand-muted/40 tracking-wider">
+            © {new Date().getFullYear()} KBBQ Restaurant · Houston, TX
+          </p>
+          <p className="text-xs text-brand-muted/30 tracking-widest">맛있게 드세요</p>
+        </div>
+      </footer>
 
     </div>
   )

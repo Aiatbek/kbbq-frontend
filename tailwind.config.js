@@ -29,10 +29,9 @@ export default {
         },
       },
       fontFamily: {
-        sans:    ['"DM Sans"', 'sans-serif'],
-        display: ['"Playfair Display"', 'serif'],
-        mono:    ['"JetBrains Mono"', 'monospace'],
-      },
+      display: ['Cormorant Garamond', 'serif'],
+      sans: ['Jost', 'sans-serif'],
+    },
       backgroundImage: {
         'flame-gradient': 'linear-gradient(135deg, #E8640C 0%, #FF4500 50%, #C4500A 100%)',
       },
